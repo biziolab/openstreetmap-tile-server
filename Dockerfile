@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Based on
 # https://switch2osm.org/serving-tiles/manually-building-a-tile-server-18-04-lts/
@@ -43,20 +43,17 @@ RUN apt-get install -y --no-install-recommends \
   libgdal-dev \
   libgeos++-dev \
   libgeos-dev \
-  libgeotiff-epsg \
   libicu-dev \
   liblua5.3-dev \
   libmapnik-dev \
   libpq-dev \
   libproj-dev \
-  libprotobuf-c0-dev \
   libtiff5-dev \
   libtool \
   libxml2-dev \
   lua5.3 \
   make \
   mapnik-utils \
-  node-gyp \
   osmium-tool \
   osmosis \
   postgis \
@@ -68,6 +65,7 @@ RUN apt-get install -y --no-install-recommends \
   python3-lxml \
   python3-psycopg2 \
   python3-shapely \
+  python \
   sudo \
   tar \
   ttf-unifont \
