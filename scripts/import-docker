@@ -1,0 +1,8 @@
+docker volume create openstreetmap-data
+
+docker run \
+    -v $PWD/singapore.osm.pbf:/opt/imports/singapore.osm.pbf \
+    -v openstreetmap-data:/var/lib/postgresql/12/main \
+    --env IMPORT_FILE_PATH=/opt/imports/singapore.osm.pbf \
+    map:latest \
+    import

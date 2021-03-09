@@ -4,6 +4,8 @@
 
 This container allows you to easily set up an OpenStreetMap PNG tile server given a `.osm.pbf` file. It is based on the [latest Ubuntu 18.04 LTS guide](https://switch2osm.org/serving-tiles/manually-building-a-tile-server-18-04-lts/) from [switch2osm.org](https://switch2osm.org/) and therefore uses the default OpenStreetMap style.
 
+[PBF downloads](https://download.openstreetmap.fr/extracts/asia/)
+
 ## Setting up the server
 
 First create a Docker volume to hold the PostgreSQL database that will contain the OpenStreetMap data:
@@ -22,6 +24,10 @@ docker run \
 
 If the container exits without errors, then your data has been successfully imported and you are now ready to run the tile server.
 
+If the file is in a different path, you can specify it in `IMPORT_FILE_PATH` environment variable. This can be handy mounting a volume where the file is present.  
+Eg:
+`IMPORT_FILE_PATH=/opt/imports/data.osm.pbf`
+
 ### Automatic updates (optional)
 
 If your import is an extract of the planet and has polygonal bounds associated with it, like those from geofabrik.de, then it is possible to set your server up for automatic updates. Make sure to reference both the OSM file and the polygon file during the import process to facilitate this, and also include the `UPDATES=enabled` variable:
@@ -36,7 +42,7 @@ docker run \
     import
 ```
 
-Refer to the section *Automatic updating and tile expiry* to actually enable the updates while running the tile server.
+Refer to the section _Automatic updating and tile expiry_ to actually enable the updates while running the tile server.
 
 ### Letting the container download the file
 
@@ -87,7 +93,7 @@ docker run \
 
 ### Enabling automatic updating (optional)
 
-Given that you've set up your import as described in the *Automatic updates* section during server setup, you can enable the updating process by setting the `UPDATES` variable while running your server as well:
+Given that you've set up your import as described in the _Automatic updates_ section during server setup, you can enable the updating process by setting the `UPDATES` variable while running your server as well:
 
 ```
 docker run \
@@ -152,6 +158,7 @@ Details for update procedure and invoked scripts can be found here [link](https:
 ### THREADS
 
 The import and tile serving processes use 4 threads by default, but this number can be changed by setting the `THREADS` environment variable. For example:
+
 ```
 docker run \
     -p 8080:80 \
@@ -164,6 +171,7 @@ docker run \
 ### CACHE
 
 The import and tile serving processes use 800 MB RAM cache by default, but this number can be changed by option -C. For example:
+
 ```
 docker run \
     -p 8080:80 \
@@ -176,6 +184,7 @@ docker run \
 ### AUTOVACUUM
 
 The database use the autovacuum feature by default. This behavior can be changed with `AUTOVACUUM` environment variable. For example:
+
 ```
 docker run \
     -p 8080:80 \
@@ -199,7 +208,7 @@ docker run \
     import
 ```
 
->Note that if you use a folder other than `/nodes` then you must make sure that you manually set the owner to `renderer`!
+> Note that if you use a folder other than `/nodes` then you must make sure that you manually set the owner to `renderer`!
 
 ### Benchmarks
 
@@ -210,11 +219,14 @@ You can find an example of the import performance to expect with this image on t
 ### ERROR: could not resize shared memory segment / No space left on device
 
 If you encounter such entries in the log, it will mean that the default shared memory limit (64 MB) is too low for the container and it should be raised:
+
 ```
 renderd[121]: ERROR: failed to render TILE ajt 2 0-3 0-3
 renderd[121]: reason: Postgis Plugin: ERROR: could not resize shared memory segment "/PostgreSQL.790133961" to 12615680 bytes: ### No space left on device
 ```
+
 To raise it use `--shm-size` parameter. For example:
+
 ```
 docker run \
     -p 8080:80 \
@@ -223,6 +235,7 @@ docker run \
     -d overv/openstreetmap-tile-server \
     run
 ```
+
 For too high values you may notice excessive CPU load and memory usage. It might be that you will have to experimentally find the best values for yourself.
 
 ### The import process unexpectedly exits

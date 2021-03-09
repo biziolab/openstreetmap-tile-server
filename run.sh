@@ -41,6 +41,12 @@ if [ "$1" = "import" ]; then
     sudo -u postgres psql -d gis -c "ALTER TABLE spatial_ref_sys OWNER TO renderer;"
     setPostgresPassword
 
+    # Copy the import file to the default path which is root
+    if [ -n "$IMPORT_FILE_PATH" ]; then
+        echo "INFO: Moving import file to /data.osm.pbf"
+        cp $IMPORT_FILE_PATH /data.osm.pbf
+    fi
+
     # Download Luxembourg as sample if no data is provided
     if [ ! -f /data.osm.pbf ] && [ -z "$DOWNLOAD_PBF" ]; then
         echo "WARNING: No import file at /data.osm.pbf, so importing Luxembourg as example..."
