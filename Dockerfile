@@ -146,7 +146,9 @@ RUN mkdir /var/lib/mod_tile \
  && echo "LoadModule headers_module /usr/lib/apache2/modules/mod_headers.so" >> /etc/apache2/conf-available/mod_headers.conf \
  && a2enconf mod_tile && a2enconf mod_headers
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
-COPY leaflet-demo.html /var/www/html/index.html
+COPY ./static/leaflet.html /var/www/html/index.html
+COPY ./static/leaflet.css /var/www/html/leaflet.css
+COPY ./static/leaflet.js /var/www/html/leaflet.js
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
  && ln -sf /dev/stderr /var/log/apache2/error.log
 
