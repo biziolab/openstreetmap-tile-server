@@ -95,13 +95,8 @@ if [ "$1" = "run" ]; then
     # Initialize PostgreSQL and Apache
     createPostgresConfig
     service postgresql start
-    # apache2ctl -f /etc/apache2/apache2.conf
     service apache2 start
 
-    # Configure renderd threads
-    # sed -i -E "s/num_threads=[0-9]+/num_threads=${THREADS:-4}/g" /usr/local/etc/renderd.conf
-
-    # renderd -f -c /usr/local/etc/renderd.conf &
     renderd -f -c /usr/local/etc/renderd.conf
 fi
 

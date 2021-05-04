@@ -2,14 +2,11 @@ FROM overv/openstreetmap-tile-server:latest
 
 COPY ./singapore.osm.pbf /data.osm.pbf
 
-ENV MY_USER renderer
+ENV USER renderer
+ENV USER_ID 10000
 
-# RUN addgroup --gid 10000 $MY_USER
-
-# RUN adduser --home /home/renderer --system --uid 10000 --gid 10000 $MY_USER
-
-RUN usermod -u 10000 $MY_USER
-RUN groupmod -g 10000 $MY_USER
+RUN usermod -u $USER_ID $USER
+RUN groupmod -g $USER_ID $USER
 
 COPY run.sh /
 RUN ./run.sh import
@@ -17,38 +14,29 @@ RUN ./run.sh import
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 COPY ports.conf /etc/apache2/ports.conf
 
-RUN echo 'renderer ALL=NOPASSWD: /usr/sbin/service postgresql start' >> /etc/sudoers
-
+# Fix permissions
 RUN echo "export APACHE_RUN_USER=renderer \n \
   export APACHE_RUN_GROUP=renderer" >> /etc/apache2/envvars
 
-RUN cat /etc/apache2/envvars
-
-RUN chown -R $MY_USER:$MY_USER /var/log/postgresql \
-  && chmod 0700 /var/log/postgresql
-
-RUN mkdir /var/run/apache2
-RUN chown -R $MY_USER:$MY_USER /var/run/apache2
-
-RUN chown -R $MY_USER:$MY_USER /var/log \
-  && chown -R $MY_USER:$MY_USER /etc/apache2 \
-  && chown -R $MY_USER:$MY_USER /var/lib/apache2 \
-  && chown -R $MY_USER:$MY_USER /var/run/postgresql \
-  && chown -R $MY_USER:$MY_USER /etc/postgresql/12 \
-  && chown -R $MY_USER:$MY_USER /var/lib/postgresql \
-  && chown -R $MY_USER:$MY_USER /etc/ssl/private \
+RUN mkdir /var/run/apache2 \
+  && chown -R $USER:$USER /var/run/apache2 \
+  && chown -R $USER:$USER /etc/apache2 \
+  && chown -R $USER:$USER /var/lib/apache2 \
+  && chown -R $USER:$USER /var/log/postgresql \
+  && chmod 0700 /var/log/postgresql \
+  && chown -R $USER:$USER /var/log \
+  && chown -R $USER:$USER /var/run/postgresql \
+  && chown -R $USER:$USER /etc/postgresql/12 \
+  && chown -R $USER:$USER /var/lib/postgresql \
+  && chown -R $USER:$USER /etc/ssl/private \
   && chmod 0600 /etc/ssl/private/ssl-cert-snakeoil.key \
-  && chown -R $MY_USER:$MY_USER /usr/local/etc \
-  && chown -R $MY_USER:$MY_USER /var/run/renderd \
-  && chown -R $MY_USER:$MY_USER /var/lib/mod_tile
+  && chown -R $USER:$USER /usr/local/etc \
+  && chown -R $USER:$USER /var/run/renderd \
+  && chown -R $USER:$USER /var/lib/mod_tile
 
-RUN sudo service apache2 stop
+USER $USER
 
-USER $MY_USER
-
-# RUN ./run.sh run
+EXPOSE 8080
 
 ENTRYPOINT ["/run.sh"]
 CMD []
-
-EXPOSE 8080
