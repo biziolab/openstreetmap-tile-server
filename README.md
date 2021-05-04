@@ -24,9 +24,9 @@ docker run \
 
 If the container exits without errors, then your data has been successfully imported and you are now ready to run the tile server.
 
-If the file is in a different path, you can specify it in `IMPORT_FILE_PATH` environment variable. This can be handy mounting a volume where the file is present.  
-Eg:
-`IMPORT_FILE_PATH=/opt/imports/data.osm.pbf`
+### Update map
+
+Download (singapore.osm.pbf)[https://download.openstreetmap.fr/extracts/asia/singapore.osm.pbf] and save it in the project root as singapore.osm.pbf
 
 ### Automatic updates (optional)
 
@@ -50,7 +50,7 @@ It is also possible to let the container download files for you rather than moun
 
 ```
 docker run \
-    -e DOWNLOAD_PBF=https://download.geofabrik.de/europe/luxembourg-latest.osm.pbf \
+    -e DOWNLOAD_PBF=https://download.openstreetmap.fr/extracts/asia/singapore.osm.pbf \
     -e DOWNLOAD_POLY=https://download.geofabrik.de/europe/luxembourg.poly \
     -v openstreetmap-data:/var/lib/postgresql/12/main \
     overv/openstreetmap-tile-server \
