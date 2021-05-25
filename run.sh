@@ -81,7 +81,7 @@ if [ "$1" = "import" ]; then
     sudo -u postgres psql -d gis -f indexes.sql
 
     # Register that data has changed for mod_tile caching purposes
-    touch /var/lib/mod_tile/planet-import-complete
+    touch /tmp/efs/fs1/planet-import-complete
 
     service postgresql stop
 
