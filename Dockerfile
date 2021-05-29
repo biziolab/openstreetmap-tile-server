@@ -1,4 +1,4 @@
-FROM overv/openstreetmap-tile-server:latest
+FROM overv/openstreetmap-tile-server:1.5.0
 
 COPY ./singapore.osm.pbf /data.osm.pbf
 
@@ -8,6 +8,8 @@ ENV USER_ID 10000
 
 RUN usermod -u $USER_ID $USER
 RUN groupmod -g $USER_ID $USER
+
+RUN mkdir -p /tmp/efs/fs1
 
 COPY run.sh /
 RUN ./run.sh import
@@ -21,7 +23,6 @@ RUN echo "export APACHE_RUN_USER=renderer \n \
   export APACHE_RUN_GROUP=renderer" >> /etc/apache2/envvars
 
 RUN mkdir /var/run/apache2 \
-  && mkdir -p /tmp/efs/fs1 \
   && chown -R $USER:$USER /var/run/apache2 \
   && chown -R $USER:$USER /etc/apache2 \
   && chown -R $USER:$USER /var/lib/apache2 \
@@ -43,4 +44,4 @@ USER $USER
 EXPOSE 8080
 
 ENTRYPOINT ["/run.sh"]
-CMD []
+CMD ["run"]

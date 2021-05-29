@@ -19,8 +19,7 @@ docker run \
     -p 8080:8080 \
     -v /absolute/path/to/luxembourg.osm.pbf:/data.osm.pbf \
     -v openstreetmap-data:/tmp/efs/fs1 \
-    map:latest \
-    run
+    map:latest
 ```
 
 If the container exits without errors, then your data has been successfully imported and you are now ready to run the tile server.
@@ -51,8 +50,7 @@ The import and tile serving processes use 4 threads by default, but this number 
 docker run \
     -p 8080:8080 \
     -e THREADS=24 \
-    -d map:latest \
-    run
+    -d map:latest
 ```
 
 ### CACHE
@@ -63,8 +61,7 @@ The import and tile serving processes use 800 MB RAM cache by default, but this 
 docker run \
     -p 8080:8080 \
     -e "OSM2PGSQL_EXTRA_ARGS=-C 4096" \
-    -d map:latest \
-    run
+    -d map:latest
 ```
 
 ## Troubleshooting
@@ -84,8 +81,7 @@ To raise it use `--shm-size` parameter. For example:
 docker run \
     -p 8080:8080 \
     --shm-size="192m" \
-    -d map:latest \
-    run
+    -d map:latest
 ```
 
 For too high values you may notice excessive CPU load and memory usage. It might be that you will have to experimentally find the best values for yourself.
