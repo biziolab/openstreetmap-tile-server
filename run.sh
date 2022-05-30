@@ -4,12 +4,7 @@ set -euo pipefail
 
 function createPostgresConfig() {
   cp /etc/postgresql/14/main/postgresql.custom.conf.tmpl /etc/postgresql/14/main/conf.d/postgresql.custom.conf
-  sudo -u postgres echo "autovacuum = $AUTOVACUUM" >> /etc/postgresql/14/main/conf.d/postgresql.custom.conf
   cat /etc/postgresql/14/main/conf.d/postgresql.custom.conf
-}
-
-function setPostgresPassword() {
-    sudo -u postgres psql -c "ALTER USER renderer PASSWORD '${PGPASSWORD:-renderer}'"
 }
 
 if [ "$#" -ne 1 ]; then
@@ -58,7 +53,6 @@ if [ "$1" == "import" ]; then
     sudo -u postgres psql -d gis -c "CREATE EXTENSION hstore;"
     sudo -u postgres psql -d gis -c "ALTER TABLE geometry_columns OWNER TO renderer;"
     sudo -u postgres psql -d gis -c "ALTER TABLE spatial_ref_sys OWNER TO renderer;"
-    setPostgresPassword
 
     # Download Luxembourg as sample if no data is provided
     if [ ! -f /data/region.osm.pbf ] && [ -z "${DOWNLOAD_PBF:-}" ]; then
@@ -122,7 +116,7 @@ if [ "$1" == "import" ]; then
     fi
 
     # Register that data has changed for mod_tile caching purposes
-    sudo -u renderer touch /data/database/planet-import-complete
+    touch /tmp/efs/fs1/planet-import-complete
 
     service postgresql stop
 
@@ -130,8 +124,6 @@ if [ "$1" == "import" ]; then
 fi
 
 if [ "$1" == "run" ]; then
-    # Clean /tmp
-    rm -rf /tmp/*
 
     # migrate old files
     if [ -f /data/database/PG_VERSION ] && ! [ -d /data/database/postgres/ ]; then
@@ -153,9 +145,6 @@ if [ "$1" == "run" ]; then
         cp /data/database/planet-import-complete /data/tiles/planet-import-complete
     fi
 
-    # Fix postgres data privileges
-    chown -R postgres: /var/lib/postgresql/ /data/database/postgres/
-
     # Configure Apache CORS
     if [ "${ALLOW_CORS:-}" == "enabled" ] || [ "${ALLOW_CORS:-}" == "1" ]; then
         echo "export APACHE_ARGUMENTS='-D ALLOW_CORS'" >> /etc/apache2/envvars
@@ -165,7 +154,6 @@ if [ "$1" == "run" ]; then
     createPostgresConfig
     service postgresql start
     service apache2 restart
-    setPostgresPassword
 
     # Configure renderd threads
     sed -i -E "s/num_threads=[0-9]+/num_threads=${THREADS:-4}/g" /usr/local/etc/renderd.conf
@@ -181,7 +169,7 @@ if [ "$1" == "run" ]; then
     }
     trap stop_handler SIGTERM
 
-    sudo -u renderer renderd -f -c /usr/local/etc/renderd.conf &
+    renderd -f -c /usr/local/etc/renderd.conf &
     child=$!
     wait "$child"
 
@@ -192,3 +180,4 @@ fi
 
 echo "invalid command"
 exit 1
+

@@ -1,6 +1,6 @@
-FROM overv/openstreetmap-tile-server:1.5.0
+FROM overv/openstreetmap-tile-server:v2.0.1
 
-COPY ./singapore.osm.pbf /data.osm.pbf
+COPY singapore.osm.pbf /data/region.osm.pbf
 
 ENV ALLOW_CORS enabled
 ENV USER renderer
@@ -34,7 +34,7 @@ RUN mkdir /var/run/apache2 \
   && chmod 0700 /var/log/postgresql \
   && chown -R $USER:$USER /var/log \
   && chown -R $USER:$USER /var/run/postgresql \
-  && chown -R $USER:$USER /etc/postgresql/12 \
+  && chown -R $USER:$USER /etc/postgresql/14 \
   && chown -R $USER:$USER /var/lib/postgresql \
   && chown -R $USER:$USER /etc/ssl/private \
   && chmod 0600 /etc/ssl/private/ssl-cert-snakeoil.key \
@@ -42,7 +42,9 @@ RUN mkdir /var/run/apache2 \
   && chown -R $USER:$USER /var/run/renderd \
   && chown -R $USER:$USER /var/lib/mod_tile \
   && chown -R $USER:$USER /var/www/html \
-  && chown -R $USER:$USER /tmp/efs/fs1 
+  && chown -R $USER:$USER /tmp \
+  && chown -R $USER:$USER /data/database/ \
+  && chown -R $USER:$USER /data/database/postgres/
 
 USER $USER
 
