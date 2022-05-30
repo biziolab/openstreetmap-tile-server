@@ -1,1 +1,6 @@
-scripts
+/.github/
+/.travis.yml
+/docker-compose.yml
+/LICENSE
+/Makefile
+/README.md
