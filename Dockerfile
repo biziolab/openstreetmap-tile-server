@@ -1,4 +1,7 @@
-FROM overv/openstreetmap-tile-server:v2.1.0
+FROM overv/openstreetmap-tile-server:v2.0.1
+
+RUN apt-get update
+RUN apt-get install -y mysql-server=8.0.30-0ubuntu0.20.04.2 freetype2-demos=2.10.1-2ubuntu0.2 dpkg=1.19.7ubuntu3.2
 
 COPY singapore.osm.pbf /data/region.osm.pbf
 
